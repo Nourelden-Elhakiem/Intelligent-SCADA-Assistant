@@ -1,6 +1,3 @@
-You have the content duplicated. Here is the clean single version:
-
-```markdown
 # Intelligent SCADA Assistant — Notebook Pipeline
 
 These notebooks form the end-to-end data-processing pipeline for the **Intelligent SCADA Assistant**. They transform a large SCADA system guide PDF into a structured, retrieval-ready knowledge base powered by PostgreSQL + pgvector.
@@ -102,4 +99,4 @@ This project follows a staged pipeline. Each notebook consumes outputs produced 
 This repository does not include the original PDF, extracted text, extracted images, embeddings, or any generated data derived from copyrighted technical manuals.
 
 The notebooks are provided to demonstrate the processing pipeline, system architecture, and implementation approach. To run the full pipeline locally, users should provide their own legally obtained technical document and configure the required file paths accordingly.
-```
+
