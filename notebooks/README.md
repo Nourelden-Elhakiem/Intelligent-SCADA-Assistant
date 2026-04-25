@@ -6,53 +6,8 @@ These notebooks form the end-to-end data-processing pipeline for the **Intellige
 
 ## Pipeline Overview
 
-```mermaid
-%%{init: {"flowchart": {"defaultRenderer": "elk", "curve": "linear"}} }%%
-flowchart TD
-    PDF[(Source PDF)]
+![Notebook Data Pipeline Overview](../docs/diagrams/notebook_data_pipeline_overview.png)
 
-    N01[01 — Image Extraction & Filtering]
-    N02[02 — PDF Structure Exploration]
-    N03[03 — Text Extraction & Cleaning]
-    N04[04 — TOC-Aware Chunking]
-    N05[05 — Image-Text Linking]
-    N06[06 — Embedding Generation]
-    N07[07 — Database Ingestion & Indexing]
-    N08[08 — RAG System Testing]
-
-    PDF --> N01
-    PDF --> N02
-    PDF --> N03
-
-    N02 --> N04
-    N03 --> N04
-
-    N01 --> N05
-    N04 --> N05
-
-    N04 --> N06
-
-    N01 --> N07
-    N04 --> N07
-    N05 --> N07
-    N06 --> N07
-
-    N07 --> N08
-
-    classDef source fill:#374151,stroke:#6B7280,color:#FFFFFF,stroke-width:1.5px
-    classDef prep fill:#1F3A5F,stroke:#4B6B8A,color:#FFFFFF,stroke-width:1.5px
-    classDef process fill:#2A4A66,stroke:#6C8EAD,color:#FFFFFF,stroke-width:1.5px
-    classDef embed fill:#355C7D,stroke:#7A9EBD,color:#FFFFFF,stroke-width:1.5px
-    classDef db fill:#264653,stroke:#5E8C99,color:#FFFFFF,stroke-width:1.5px
-    classDef test fill:#5B4B8A,stroke:#8E7CC3,color:#FFFFFF,stroke-width:1.5px
-
-    class PDF source
-    class N01,N02,N03 prep
-    class N04,N05 process
-    class N06 embed
-    class N07 db
-    class N08 test
-```
 
 ---
 
