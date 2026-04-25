@@ -7,38 +7,51 @@ These notebooks form the end-to-end data-processing pipeline for the **Intellige
 ## Pipeline Overview
 
 ```mermaid
+%%{init: {"flowchart": {"defaultRenderer": "elk", "curve": "linear"}} }%%
 flowchart TD
-    PDF[(fa:fa-file-pdf Source PDF)]
+    PDF[(Source PDF)]
 
-    N02(fa:fa-sitemap 02 - Structure Exploration)
-    N01(fa:fa-images 01 - Image Extraction)
-    N03(fa:fa-file-lines 03 - Text Extraction)
-    N04(fa:fa-layer-group 04 - TOC-Aware Chunking)
-    N05(fa:fa-link 05 - Image-Text Linking)
-    N06(fa:fa-brain 06 - Embedding Generation)
-    N07(fa:fa-database 07 - Database Ingestion)
-    N08(fa:fa-flask-vial 08 - RAG System Testing)
+    N01[01 — Image Extraction & Filtering]
+    N02[02 — PDF Structure Exploration]
+    N03[03 — Text Extraction & Cleaning]
+    N04[04 — TOC-Aware Chunking]
+    N05[05 — Image-Text Linking]
+    N06[06 — Embedding Generation]
+    N07[07 — Database Ingestion & Indexing]
+    N08[08 — RAG System Testing]
 
-    PDF --> N02
     PDF --> N01
-    N02 --> N03
+    PDF --> N02
+    PDF --> N03
+
+    N02 --> N04
     N03 --> N04
-    N04 --> N05
+
     N01 --> N05
-    N05 --> N06
-    N06 --> N07
+    N04 --> N05
+
+    N04 --> N06
+
     N01 --> N07
+    N04 --> N07
+    N05 --> N07
+    N06 --> N07
+
     N07 --> N08
 
-    style PDF fill:#2d2d2d,stroke:#666,color:#fff
-    style N01 fill:#1e3a5f,stroke:#4a90d9,color:#fff
-    style N02 fill:#1e3a5f,stroke:#4a90d9,color:#fff
-    style N03 fill:#1e3a5f,stroke:#4a90d9,color:#fff
-    style N04 fill:#2c4a6e,stroke:#5b9bd5,color:#fff
-    style N05 fill:#2c4a6e,stroke:#5b9bd5,color:#fff
-    style N06 fill:#3b5998,stroke:#6b8cce,color:#fff
-    style N07 fill:#3b5998,stroke:#6b8cce,color:#fff
-    style N08 fill:#6a3d9a,stroke:#9b72cf,color:#fff
+    classDef source fill:#374151,stroke:#6B7280,color:#FFFFFF,stroke-width:1.5px
+    classDef prep fill:#1F3A5F,stroke:#4B6B8A,color:#FFFFFF,stroke-width:1.5px
+    classDef process fill:#2A4A66,stroke:#6C8EAD,color:#FFFFFF,stroke-width:1.5px
+    classDef embed fill:#355C7D,stroke:#7A9EBD,color:#FFFFFF,stroke-width:1.5px
+    classDef db fill:#264653,stroke:#5E8C99,color:#FFFFFF,stroke-width:1.5px
+    classDef test fill:#5B4B8A,stroke:#8E7CC3,color:#FFFFFF,stroke-width:1.5px
+
+    class PDF source
+    class N01,N02,N03 prep
+    class N04,N05 process
+    class N06 embed
+    class N07 db
+    class N08 test
 ```
 
 ---
