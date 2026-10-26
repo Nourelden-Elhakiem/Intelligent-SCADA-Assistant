@@ -1,0 +1,49 @@
+# Secrets
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+dist/
+build/
+frontend/node_modules/
+frontend/dist/
+frontend/*.tsbuildinfo
+frontend/vite.config.js
+frontend/vite.config.d.ts
+src/intelligent_scada/static/
+.venv/
+venv/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# IDE and OS
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Private/copyrighted and generated pipeline data
+data/pdf/*
+!data/pdf/README.md
+data/images/*
+data/filtered/*
+data/manifests/*
+data/text/*
+data/linked/*
+data/embeddings/*
+data/documents/*
+outputs/*
+
+# Keep explanatory placeholders
+!data/README.md
+!outputs/.gitkeep
