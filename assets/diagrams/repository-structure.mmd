@@ -1,0 +1,44 @@
+---
+config:
+  layout: elk
+  theme: neutral
+  look: handDrawn
+  fontFamily: '''Merriweather Variable'', serif'
+  flowchart:
+    wrappingWidth: 500
+  themeVariables:
+    fontFamily: '''Merriweather Variable'', serif'
+---
+flowchart LR
+    subgraph Core["Backend · src/intelligent_scada/"]
+        direction TB
+        API["api/ · FastAPI, routes, jobs"]
+        INGEST["ingestion/ · PDF analysis & extraction"]
+        CHUNK["chunking/ · TOC & semantic chunks"]
+        EMBED["embeddings/ · Sentence Transformers"]
+        RETRIEVE["retrieval/ · pgvector cosine search"]
+        ROUTER["router/ · Deterministic + optional LLM routing"]
+        RAG["rag/ · LangChain, prompts, citations"]
+        MEM["memory/ · PostgreSQL sessions"]
+        LINK["linking/ & images/ · Visual context mapping"]
+        DB_SRC["database/ · Application schema & connections"]
+        PY["pipeline.py · cli.py · config.py"]
+    end
+
+    subgraph Infra["Infrastructure · Web · Docs"]
+        direction TB
+        UI["frontend/ · React, TypeScript, Vite"]
+        DOCS["docs/ · Architecture & data contracts"]
+        TESTS["tests/ · Synthetic unit & integration"]
+        NOTE["notebooks/ · Exploration & manual preparation"]
+        DB_ROOT["database/ · Root SQL schema & dev reset"]
+        DOCK["Dockerfile · docker-compose.yml"]
+        CONFIG["pyproject.toml · .env.example"]
+        ASSETS["assets/ · Logo & demo assets"]
+    end
+
+    ROOT(["📁 Intelligent-SCADA-Assistant"]) --> Core & Infra
+    style ROOT font-size:24px,stroke:#3B82F6,stroke-width:2.5px;
+    linkStyle default stroke:#3B82F6,stroke-width:2.5px;
+    style Core stroke:#3B82F6,stroke-width:2px;
+    style Infra stroke:#3B82F6,stroke-width:2px;

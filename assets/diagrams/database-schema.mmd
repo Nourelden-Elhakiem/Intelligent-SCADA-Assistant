@@ -1,0 +1,117 @@
+---
+title: Intelligent SCADA Assistant - Database Architecture
+config:
+  theme: base
+  look: neo
+  layout: elk
+  fontFamily: "Inter, Arial, sans-serif"
+  themeVariables:
+    background: "#FFFFFF"
+    primaryColor: "#FFFFFF"
+    primaryTextColor: "#172033"
+    lineColor: "#8392A8"
+    textColor: "#172033"
+    fontSize: "16px"
+  er:
+    diagramPadding: 24
+    minEntityWidth: 260
+    entityPadding: 16
+    nodeSpacing: 65
+    rankSpacing: 90
+    fontSize: 16
+---
+erDiagram
+    direction LR
+
+    documents:::docBlue {
+        BIGSERIAL id PK
+        TEXT document_key UK
+        TEXT document_name
+        TEXT source_filename
+        TEXT source_sha256
+        TEXT embedding_model
+        INTEGER embedding_dimension
+        TIMESTAMPTZ created_at
+        TIMESTAMPTZ updated_at
+    }
+
+    chunks:::chunkBlue {
+        BIGSERIAL id PK
+        BIGINT document_id FK
+        TEXT chunk_id
+        INTEGER chunk_index
+        TEXT text
+        INTEGER page_start
+        INTEGER page_end
+        JSONB source_pages
+        INTEGER toc_level
+        TEXT section_title
+        JSONB section_path
+        INTEGER section_start_page
+        INTEGER section_end_page
+        INTEGER part_index
+        INTEGER part_count
+        INTEGER char_count
+        INTEGER word_count
+        VECTOR(768) embedding
+        TIMESTAMPTZ created_at
+        TIMESTAMPTZ updated_at
+    }
+
+    images:::imageTeal {
+        BIGSERIAL id PK
+        BIGINT document_id FK
+        TEXT filename
+        INTEGER page
+        INTEGER width
+        INTEGER height
+        INTEGER file_size_bytes
+        TEXT image_path
+        TEXT md5
+        TEXT decision
+        TIMESTAMPTZ created_at
+        TIMESTAMPTZ updated_at
+    }
+
+    chunk_images:::mappingMint {
+        BIGSERIAL id PK
+        BIGINT document_id FK
+        TEXT chunk_id FK
+        TEXT image_filename FK
+        TEXT link_reason
+        TIMESTAMPTZ created_at
+    }
+
+    chat_sessions:::memoryViolet {
+        UUID session_id PK
+        BIGINT document_id FK
+        TEXT summary
+        BOOLEAN memory_enabled
+        INTEGER useful_message_count
+        TIMESTAMPTZ created_at
+        TIMESTAMPTZ updated_at
+    }
+
+    chat_messages:::memoryViolet {
+        BIGSERIAL id PK
+        UUID session_id FK
+        TEXT role
+        TEXT content
+        BOOLEAN is_context_useful
+        JSONB citations
+        TIMESTAMPTZ created_at
+    }
+
+    documents ||--o{ chunks : contains
+    documents ||--o{ images : contains
+    documents ||--o{ chunk_images : scopes
+    documents ||--o{ chat_sessions : owns
+    chunks ||--o{ chunk_images : links
+    images ||--o{ chunk_images : links
+    chat_sessions ||--o{ chat_messages : stores
+
+    classDef docBlue fill:#E8F0FE,stroke:#3468B3,stroke-width:2px,color:#172033
+    classDef chunkBlue fill:#EDF4FE,stroke:#5784C3,stroke-width:2px,color:#172033
+    classDef imageTeal fill:#EDF8FC,stroke:#438FA8,stroke-width:2px,color:#172033
+    classDef mappingMint fill:#E7F7F2,stroke:#278C75,stroke-width:2px,color:#172033
+    classDef memoryViolet fill:#F1EEFC,stroke:#7965B5,stroke-width:2px,color:#172033
