@@ -1,0 +1,77 @@
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: intelligent_scada
+      POSTGRES_USER: scada
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set a private POSTGRES_PASSWORD in .env}
+    entrypoint: ["/bin/sh", "-ec"]
+    command:
+      - |
+        case "$$POSTGRES_PASSWORD" in
+          ""|change_me|changeme|YOUR_PASSWORD|YOUR_URL_ENCODED_PASSWORD)
+            echo "Set an explicit non-placeholder POSTGRES_PASSWORD" >&2; exit 1 ;;
+        esac
+        exec docker-entrypoint.sh postgres
+    ports:
+      - "127.0.0.1:${POSTGRES_PORT:-5433}:5432"
+    volumes:
+      - scada_postgres_data:/var/lib/postgresql/data
+      - ./database/schema.sql:/docker-entrypoint-initdb.d/001-schema.sql:ro
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U scada -d intelligent_scada" ]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    environment:
+      PG_CONN_STR: postgresql://scada:${POSTGRES_PASSWORD:?Set a private POSTGRES_PASSWORD in .env}@postgres:5432/intelligent_scada
+      SCADA_PROJECT_ROOT: /app
+      SCADA_DATA_DIR: /app/data
+      SCADA_API_HOST: 0.0.0.0
+      SCADA_API_PORT: 8000
+      SCADA_AUTO_INIT_DB: "true"
+      SCADA_LOG_LEVEL: ${SCADA_LOG_LEVEL:-INFO}
+      SCADA_MAX_UPLOAD_MB: ${SCADA_MAX_UPLOAD_MB:-250}
+      SCADA_API_WORKERS: "1"
+      SCADA_MAX_PENDING_JOBS: ${SCADA_MAX_PENDING_JOBS:-4}
+      SCADA_RETAINED_JOBS: ${SCADA_RETAINED_JOBS:-100}
+      SCADA_EMBEDDING_REVISION: ${SCADA_EMBEDDING_REVISION:-}
+      SCADA_INGESTION_WORKERS: ${SCADA_INGESTION_WORKERS:-1}
+      SCADA_ANSWER_BASE_URL: ${SCADA_ANSWER_BASE_URL:-}
+      SCADA_ANSWER_API_KEY: ${SCADA_ANSWER_API_KEY:-}
+      SCADA_ANSWER_MODEL: ${SCADA_ANSWER_MODEL:-gemini-2.5-flash}
+      SCADA_MIN_RETRIEVAL_SCORE: ${SCADA_MIN_RETRIEVAL_SCORE:-0.25}
+      SCADA_ROUTER_ENABLED: ${SCADA_ROUTER_ENABLED:-false}
+      SCADA_ROUTER_BASE_URL: ${SCADA_ROUTER_BASE_URL:-}
+      SCADA_ROUTER_API_KEY: ${SCADA_ROUTER_API_KEY:-}
+      SCADA_ROUTER_MODEL: ${SCADA_ROUTER_MODEL:-openai/gpt-4.1-mini}
+      HF_TOKEN: ${HF_TOKEN:-}
+    ports:
+      - "127.0.0.1:${SCADA_API_PORT:-8000}:8000"
+    volumes:
+      - ./data:/app/data
+      - scada_model_cache:/home/scada/.cache
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/v1/health')"
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 15s
+
+volumes:
+  scada_postgres_data:
+  scada_model_cache:
